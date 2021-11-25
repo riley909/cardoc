@@ -1,4 +1,4 @@
-import { Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { AppService } from './app.service';
 import { AuthService } from './auth/auth.service';
 import { UserCredentialsDto } from './users/dto/user-credentials.dto';
@@ -17,7 +17,7 @@ export class AppController {
 
   @Post('login')
   async login(
-    userCredentialsDto: UserCredentialsDto,
+    @Body() userCredentialsDto: UserCredentialsDto,
   ): Promise<{ accessToken: string }> {
     return this.authService.login(userCredentialsDto);
   }
