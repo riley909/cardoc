@@ -39,3 +39,4 @@ docker-compose.yml
 
 # Configs
 ormconfig.json
+.env
