@@ -1,8 +1,10 @@
+import { UserTire } from 'src/usertires/entities/usertire.entity';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -22,4 +24,7 @@ export class User {
 
   @DeleteDateColumn()
   deletedAt: Date;
+
+  @OneToMany(() => UserTire, (userTire) => userTire.user)
+  userTires: UserTire[];
 }
