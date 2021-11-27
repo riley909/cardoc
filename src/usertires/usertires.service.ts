@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import axios from 'axios';
+import { ResponseMessages } from 'src/response-messages.enum';
 import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserTireDto } from './dto/create-usertire.dto';
@@ -27,9 +28,7 @@ export class UserTiresService {
       .catch((e) => console.log('error', e));
 
     if (!result) {
-      // trimId가 유효하지 않음
-      // TODO: statusMessage
-      throw new BadRequestException('3');
+      throw new BadRequestException(ResponseMessages.INVALID_TRIM_ID);
     }
 
     const front = result.frontTire.value;
@@ -43,9 +42,7 @@ export class UserTiresService {
     const isMatch = reg.test(tire);
 
     if (!isMatch) {
-      // 데이터가 타이어 정보 양식에 맞지 않음
-      // TODO: statusMessage
-      throw new BadRequestException('2');
+      throw new BadRequestException(ResponseMessages.INVALID_TIRE_VALUE);
     }
 
     const half = tire.split('/');
@@ -61,9 +58,7 @@ export class UserTiresService {
     const limit = 5;
 
     if (createUserTireDtos.length > limit) {
-      // 최대 요청 범위를 벗어남
-      // TODO: statusMessage
-      throw new BadRequestException('1');
+      throw new BadRequestException(ResponseMessages.OUT_OF_LIMIT);
     }
 
     const tires = [];
@@ -71,6 +66,9 @@ export class UserTiresService {
     for (let i = 0; i < createUserTireDtos.length; i++) {
       const id = createUserTireDtos[i].id;
       const user = await this.usersRepository.findOne({ where: { id: id } });
+
+      if (!user) throw new BadRequestException(ResponseMessages.INVALID_USER);
+
       const trimId = createUserTireDtos[i].trimId;
 
       const tireInfo = await this.loadCarData(trimId);
@@ -95,9 +93,11 @@ export class UserTiresService {
         .into(UserTire)
         .values(tires)
         .execute();
-      return `insertion successfully executed`;
+      return { message: ResponseMessages.TIRE_SAVE_SUCCESS };
     } catch (e) {
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException(
+        ResponseMessages.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }
