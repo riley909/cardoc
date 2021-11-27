@@ -53,7 +53,9 @@ export class UserTiresService {
     return { width, aspectRatio, wheelSize };
   }
 
-  async create(createUserTireDtos: CreateUserTireDto[]) {
+  async create(
+    createUserTireDtos: CreateUserTireDto[],
+  ): Promise<{ message: string }> {
     const limit = 5;
 
     if (createUserTireDtos.length > limit) {
@@ -103,7 +105,9 @@ export class UserTiresService {
     }
   }
 
-  async findTireByUserId(id: string) {
+  async findTireByUserId(
+    id: string,
+  ): Promise<{ message: string; tire: UserTire[] }> {
     const user = await this.usersService.findById(id);
 
     const tire = await this.userTireRepository.find({
