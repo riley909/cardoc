@@ -97,4 +97,14 @@ export class UserTiresService {
       );
     }
   }
+
+  async findTireByUserId(id: string) {
+    const user = await this.usersService.findById(id);
+
+    const tire = await this.userTireRepository.find({
+      where: { user },
+    });
+
+    return { message: ResponseMessages.READ_TIRE_SUCCESS, tire };
+  }
 }
