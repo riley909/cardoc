@@ -1,9 +1,14 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  BadGatewayException,
+  ConflictException,
+  Injectable,
+} from '@nestjs/common';
 import { UserCredentialsDto } from './dto/user-credentials.dto';
 import * as bcrypt from 'bcrypt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
+import { ResponseMessages } from 'src/response-messages.enum';
 
 @Injectable()
 export class UsersService {
@@ -34,7 +39,11 @@ export class UsersService {
   }
 
   async findById(id: string): Promise<User> {
-    const user = this.usersRepository.findOne({ id });
+    const user = await this.usersRepository.findOne({ where: { id: id } });
+
+    if (!user) {
+      throw new BadGatewayException(ResponseMessages.INVALID_USER);
+    }
     return user;
   }
 }

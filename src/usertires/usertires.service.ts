@@ -6,7 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import axios from 'axios';
 import { ResponseMessages } from 'src/response-messages.enum';
-import { User } from 'src/users/entities/user.entity';
+import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
 import { CreateUserTireDto } from './dto/create-usertire.dto';
 import { UserTire } from './entities/usertire.entity';
@@ -17,8 +17,7 @@ export class UserTiresService {
   constructor(
     @InjectRepository(UserTire)
     private userTireRepository: Repository<UserTire>,
-    @InjectRepository(User)
-    private usersRepository: Repository<User>,
+    private usersService: UsersService,
   ) {}
 
   async loadCarData(trimId: TrimId) {
@@ -65,9 +64,7 @@ export class UserTiresService {
 
     for (let i = 0; i < createUserTireDtos.length; i++) {
       const id = createUserTireDtos[i].id;
-      const user = await this.usersRepository.findOne({ where: { id: id } });
-
-      if (!user) throw new BadRequestException(ResponseMessages.INVALID_USER);
+      const user = await this.usersService.findById(id);
 
       const trimId = createUserTireDtos[i].trimId;
 
