@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import axios from 'axios';
 import { User } from 'src/users/entities/user.entity';
@@ -46,7 +50,6 @@ export class UserTiresService {
 
     const half = tire.split('/');
     const quarter = half[1].split('R');
-
     const width = half[0];
     const aspectRatio = quarter[0];
     const wheelSize = quarter[1];
@@ -63,6 +66,8 @@ export class UserTiresService {
       throw new BadRequestException('1');
     }
 
+    const tires = [];
+
     for (let i = 0; i < createUserTireDtos.length; i++) {
       const id = createUserTireDtos[i].id;
       const user = await this.usersRepository.findOne({ where: { id: id } });
@@ -71,8 +76,7 @@ export class UserTiresService {
       const tireInfo = await this.loadCarData(trimId);
       const front = this.getTireInfo(tireInfo.front);
       const rear = this.getTireInfo(tireInfo.rear);
-
-      const userTire = await this.userTireRepository.create({
+      tires.push({
         user,
         trimId,
         frontWidth: front.width,
@@ -82,10 +86,18 @@ export class UserTiresService {
         rearAspectRatio: rear.aspectRatio,
         rearWheelSize: rear.wheelSize,
       });
-
-      await this.userTireRepository.save(userTire);
     }
 
-    return;
+    try {
+      await this.userTireRepository
+        .createQueryBuilder()
+        .insert()
+        .into(UserTire)
+        .values(tires)
+        .execute();
+      return `insertion successfully executed`;
+    } catch (e) {
+      throw new InternalServerErrorException();
+    }
   }
 }
