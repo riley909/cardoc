@@ -25,6 +25,6 @@ export class User {
   @DeleteDateColumn()
   deletedAt: Date;
 
-  @OneToMany(() => UserTire, (userTire) => userTire.user)
+  @OneToMany(() => UserTire, (userTire) => userTire.user, { eager: true })
   userTires: UserTire[];
 }

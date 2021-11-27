@@ -65,14 +65,14 @@ export class UserTiresService {
 
     for (let i = 0; i < createUserTireDtos.length; i++) {
       const id = createUserTireDtos[i].id;
-      const user = await this.usersRepository.findOne({ where: id });
+      const user = await this.usersRepository.findOne({ where: { id: id } });
       const trimId = createUserTireDtos[i].trimId;
 
       const tireInfo = await this.loadCarData(trimId);
       const front = this.getTireInfo(tireInfo.front);
       const rear = this.getTireInfo(tireInfo.rear);
 
-      await this.userTireRepository.create({
+      const userTire = await this.userTireRepository.create({
         user,
         trimId,
         frontWidth: front.width,
@@ -82,6 +82,8 @@ export class UserTiresService {
         rearAspectRatio: rear.aspectRatio,
         rearWheelSize: rear.wheelSize,
       });
+
+      await this.userTireRepository.save(userTire);
     }
 
     return;

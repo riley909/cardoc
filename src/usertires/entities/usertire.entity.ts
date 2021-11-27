@@ -33,7 +33,7 @@ export class UserTire {
   @Column()
   rearWheelSize: number;
 
-  @ManyToOne(() => User, (user) => user.userTires, { eager: true })
+  @ManyToOne(() => User, (user) => user.userTires)
   @JoinColumn({ name: 'userId' })
   user: User;
 }
