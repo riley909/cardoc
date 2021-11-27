@@ -8,5 +8,6 @@ export enum ResponseMessages {
   OUT_OF_LIMIT = `최대 요청 범위를 벗어났습니다.`,
   INVALID_TRIM_ID = '올바르지 않은 trimId 입니다.',
   INVALID_TIRE_VALUE = '올바르지 않은 타이어 규격 정보입니다.',
+  TIRE_DUPLICATE = '이미 존재하는 타이어 정보입니다.',
   READ_TIRE_SUCCESS = '타이어 정보 조회 성공',
 }

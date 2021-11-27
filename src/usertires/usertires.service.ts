@@ -68,6 +68,11 @@ export class UserTiresService {
 
       const trimId = createUserTireDtos[i].trimId;
 
+      const tire = await this.userTireRepository.findOne({
+        where: { user, trimId },
+      });
+      if (tire) throw new BadRequestException(ResponseMessages.TIRE_DUPLICATE);
+
       const tireInfo = await this.loadCarData(trimId);
       const front = this.getTireInfo(tireInfo.front);
       const rear = this.getTireInfo(tireInfo.rear);
