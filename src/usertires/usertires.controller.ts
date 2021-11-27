@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { CreateUserTireDto } from './dto/create-usertire.dto';
 import { UserTiresService } from './usertires.service';
 
@@ -9,5 +9,10 @@ export class UserTiresController {
   @Post()
   create(@Body() createUserTireDto: CreateUserTireDto[]) {
     return this.userTiresService.create(createUserTireDto);
+  }
+
+  @Get(':id')
+  findTireByUserId(@Param('id') id: string) {
+    return this.userTiresService.findTireByUserId(id);
   }
 }
