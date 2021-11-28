@@ -9,6 +9,7 @@ import { ResponseMessages } from 'src/response-messages.enum';
 import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
 import { CreateUserTireDto } from './dto/create-usertire.dto';
+import { PaginationDto } from './dto/pagination.dto';
 import { UserTire } from './entities/usertire.entity';
 import { TrimId } from './enums/trimId.enum';
 
@@ -107,13 +108,32 @@ export class UserTiresService {
 
   async findTireByUserId(
     id: string,
-  ): Promise<{ message: string; tire: UserTire[] }> {
+    paginationDto: PaginationDto,
+  ): Promise<{
+    message: string;
+    totalPage: number;
+    currentPage: number;
+    results: UserTire[];
+  }> {
+    let { page, pageSize } = paginationDto;
+    page = page || 1;
+    pageSize = pageSize || 10;
+
     const user = await this.usersService.findById(id);
 
-    const tire = await this.userTireRepository.find({
+    const [tires, count] = await this.userTireRepository.findAndCount({
       where: { user },
+      take: pageSize,
+      skip: (page - 1) * pageSize,
     });
 
-    return { message: ResponseMessages.READ_TIRE_SUCCESS, tire };
+    const totalPage = Math.ceil(count / pageSize);
+
+    return {
+      message: ResponseMessages.READ_TIRE_SUCCESS,
+      totalPage: totalPage,
+      currentPage: page,
+      results: tires,
+    };
   }
 }
