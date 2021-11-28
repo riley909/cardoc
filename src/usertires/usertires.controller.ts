@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBody,
@@ -8,6 +8,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { CreateUserTireDto } from './dto/create-usertire.dto';
+import { PaginationDto } from './dto/pagination.dto';
 import { UserTire } from './entities/usertire.entity';
 import { UserTiresService } from './usertires.service';
 
@@ -52,18 +53,24 @@ export class UserTiresController {
     schema: {
       properties: {
         message: { default: '타이어 정보 조회 성공' },
-        tire: {
-          type: 'array',
-          items: {
-            properties: {
-              userTireId: { default: 17 },
-              trimId: { default: 5000 },
-              frontWidth: { default: 225 },
-              frontAspectRatio: { default: 60 },
-              frontWheelSize: { default: 16 },
-              rearWidth: { default: 225 },
-              rearAspectRatio: { default: 60 },
-              rearWheelSize: { default: 16 },
+        totalPage: { default: 4 },
+        currentPage: { default: 1 },
+        results: {
+          properties: {
+            tires: {
+              type: 'array',
+              items: {
+                properties: {
+                  userTireId: { default: 17 },
+                  trimId: { default: 5000 },
+                  frontWidth: { default: 225 },
+                  frontAspectRatio: { default: 60 },
+                  frontWheelSize: { default: 16 },
+                  rearWidth: { default: 225 },
+                  rearAspectRatio: { default: 60 },
+                  rearWheelSize: { default: 16 },
+                },
+              },
             },
           },
         },
@@ -73,7 +80,13 @@ export class UserTiresController {
   @Get(':id')
   findTireByUserId(
     @Param('id') id: string,
-  ): Promise<{ message: string; tire: UserTire[] }> {
-    return this.userTiresService.findTireByUserId(id);
+    @Query() paginationDto: PaginationDto,
+  ): Promise<{
+    message: string;
+    totalPage: number;
+    currentPage: number;
+    results: UserTire[];
+  }> {
+    return this.userTiresService.findTireByUserId(id, paginationDto);
   }
 }
