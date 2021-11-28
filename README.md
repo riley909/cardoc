@@ -10,11 +10,15 @@
 
 [기업명] **카닥**
 
+### [배포 링크]
+
+[🔗 링크](http://ec2-18-222-147-30.us-east-2.compute.amazonaws.com:3000/api)
+
 </br>
 
-| github                                  | blog                                                                                              | TIL/회고 |
-| --------------------------------------- | ------------------------------------------------------------------------------------------------- | -------- |
-| [riley909](https://github.com/riley909) | [Riley-DevLog](https://yummy-error-929.notion.site/Riley-DevLog-e078b7ef7cbe4d6092d206aebfc42abd) |          |
+| github                                  | blog                                                                                              | TIL/회고               |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------- | ---------------------- |
+| [riley909](https://github.com/riley909) | [Riley-DevLog](https://yummy-error-929.notion.site/Riley-DevLog-e078b7ef7cbe4d6092d206aebfc42abd) | [카닥 기술과제 회고]() |
 
 </div>
 
@@ -147,29 +151,66 @@
 
 ### [Etc.] <img src="https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=Git&logoColor=white"/>&nbsp;<img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"/>&nbsp;<img src="https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=Postman&logoColor=white"/> <img src="https://img.shields.io/badge/-Swagger-%23Clojure?style=for-the-badge&logo=swagger&logoColor=white">
 
-<!-- <img src="https://user-images.githubusercontent.com/67426853/142720033-26301764-7bbe-4e6b-bc82-e9b19a3dbd3a.png" width=700> -->
+<img src="https://user-images.githubusercontent.com/67426853/142720033-26301764-7bbe-4e6b-bc82-e9b19a3dbd3a.png" width=700>
 
 <br>
 <br>
 
 ## DB Schema
 
+<img src="https://user-images.githubusercontent.com/67426853/143736034-e822d0e0-ae5e-4d40-a753-637e2555dab1.png" width=700>
+
 </br>
 </br>
 
 ## 📌 구현 기능
 
-## 📖 API Document
+### [사용자 생성 API]
 
-[🔗 Postman Document]()
+#### [회원가입]
+
+- id와 password를 입력하여 새 사용자를 생성할 수 있습니다.
+- password는 테스트 편의를 위해 별도의 형식 없이 최소, 최대 글자수만 확인합니다.
+- 데이터베이스에 이미 존재하는 ID일 경우 가입되지 않으며 400 상태 코드와 메시지를 응답으로 반환합니다.
+- password는 bcrypt를 사용하여 암호화 한 뒤 저장됩니다.
+
+#### [로그인]
+
+- 사용자의 입력과 데이터베이스의 정보를 비교하여 일치 여부를 확인합니다.
+- 일치하는 경우 accessToken을 반환합니다.
+- 일치하지 않는 경우 401 상태 코드와 메시지를 응답으로 반환합니다.
+
+</br>
+
+### [사용자가 소유한 타이어 정보를 저장하는 API]
+
+- 회원 id와 차종 id(trimId)를 입력하여 API를 호출합니다.
+- 입력받은 차종 id를 이용하여 외부 API를 호출합니다.
+  - https://dev.mycar.cardoc.co.kr/v1/trim/{trimId}
+  - spec → driving → frontTire/rearTire 에서 필요한 정보를 가져올 수 있습니다.
+- API 호출시 유효한 차종 id가 아니라면 400 상태 코드와 메시지를 응답으로 반환합니다.
+  - 테스트 편의를 위해 차종 id는 5000, 9000, 11000, 15000 네 가지로 제한되어 있습니다.
+- {폭}/{편평비}R{휠사이즈} 의 형식이 아니라면 400 상태 코드와 메시지를 응답으로 반환합니다.
+- 요청이 5건 이상일 경우 400 상태 코드와 메시지를 응답으로 반환합니다.
+- 같은 사용자가 같은 차종 id로 요청할 경우 400 상태 코드와 메시지를 응답으로 반환합니다.
+
+</br>
+
+### [사용자가 소유한 타이어 정보 조회 API]
+
+</br>
+</br>
+
+## 📖 API Document
 
 ### API Test 방법
 
-1. 다음 링크로 이동합니다. [postman 링크]()
-2. user폴더 안의 회원가입, 로그인 요청을 통하여 accessToken을 획득합니다.
-3. 권한이 필요한 api 요청 시 header의 Authorization 항목에 accessToken을 입력하여 요청할 수 있습니다.
+다음 링크로 이동하여 테스트할 수 있습니다.
 
-- 로그인, 회원가입을 제외한 api 호출시 accessToken이 필요합니다.
+[🔗 Swagger 링크](http://ec2-18-222-147-30.us-east-2.compute.amazonaws.com:3000/api)
+
+</br>
+</br>
 
 ## 🪄 설치 및 실행 방법
 
@@ -181,6 +222,8 @@
 $ git clone
 ```
 
+</br>
+
 2. clone한 경로에 들어간 후 의존성을 설치하고 환경 셋팅을 진행합니다.
 
 ```
@@ -188,39 +231,44 @@ $ cd cardoc
 $ npm install
 ```
 
-3. src 폴더에 docker-compose.yml 파일을 만들어 데이터베이스 연결을 설정합니다.
+</br>
 
-- [docker-compose.yml 노션 링크]()
-- <details><summary><b>링크 접속불가 시 docker-compose 파일 설정 방법</b></summary>
+3. Docker를 설치합니다.
 
-  ```
-  version: '3.1'
+- Docker Engine
 
-  services:
-    db:
-      image: mysql
-      command:
-        --default-authentication-plugin=mysql_native_password
-      restart: always
-      ports:
-        - '3306:3306'
-      environment:
-        MYSQL_ROOT_PASSWORD: 원하는 비밀번호
-        MYSQL_DATABASE: 원하는 데이터베이스 이름
-  ```
+  [여기](https://docs.docker.com/engine/install/)에서 플랫폼별 설치법을 확인하고 설치합니다.
 
-</details>
+</br>
 
-4.서버를 구동합니다.
+4. 프로젝트를 빌드합니다.
 
 ```
-$ npm start
+npm build
 ```
 
-<span style="color:red"><b>[수정]</b>5. Unit test 및 End-to-End test를 진행합니다.</span>
+5. 설정 파일들을 작성하여 dist 폴더로 이동시킵니다.
+
+- [configurations 노션 링크](https://yummy-error-929.notion.site/Cardoc-Project-Configurations-4e767acba2214a44b2720efa8cbc1cad)
+
+- 링크에는 아래의 파일들이 첨부되어 있습니다.
+
+  - docker-compose.yml
+  - .env
+  - ormconfig.json
+
+</br>
+
+6. 데이터베이스를 실행합니다.
 
 ```
-$ npm test
+$ docker-compose up -d
+```
+
+7. 서버를 구동합니다.
+
+```
+$ npm run start:prod
 ```
 
 </br>
@@ -231,6 +279,8 @@ $ npm test
 </br>
 
 <div align=center>
+
+<img src="https://user-images.githubusercontent.com/67426853/143738466-5bc48d3f-04fb-48cb-8d6a-b3d7fe3bbbe5.png" width=600>
 
 </div>
 
